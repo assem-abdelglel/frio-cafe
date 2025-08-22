@@ -18,7 +18,7 @@ class PaymentController extends Controller
     $request->validate([
         'order_id' => 'required|exists:orders,id',
         'amount' => 'required|numeric|min:0',
-        'method' => 'required|string', // مثل cash أو card
+        'payment_method' => 'required|un:cash,card', // مثل cash أو card
     ]);
 
     $order = Order::findOrFail($request->order_id);
@@ -32,8 +32,9 @@ class PaymentController extends Controller
 
     // إنشاء الدفع
     $payment = $order->payment()->create([
-        'amount' => $request->amount,
-        'method' => $request->method,
+        'order_id'       => $request->order_id,
+        'amount'         => $request->amount,
+        'payment_method' => $request->payment_method,
     ]);
 
     // إنشاء الفاتورة تلقائيًا بعد الدفع
